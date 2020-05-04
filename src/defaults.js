@@ -8,6 +8,8 @@ let defaults = {
   padding: 30, // padding around the simulation
   boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
   nodeDimensionsIncludeLabels: false, // whether labels should be included in determining the space used by a node
+  centerGraph: true, // whether the graph should be centered
+  extraLocked: function( node ){ return false; }, // locks specific nodes only for this run
 
   // layout event callbacks
   ready: function(){}, // on layoutready

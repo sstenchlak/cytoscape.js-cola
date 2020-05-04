@@ -227,7 +227,9 @@ ColaLayout.prototype.run = function(){
         adaptor.dragstart( scrCola );
         break;
       case 'free':
-        adaptor.dragend( scrCola );
+        if (!options.extraLocked(node)) {
+          adaptor.dragend( scrCola );
+        }
         break;
       case 'position':
         // only update when different (i.e. manual .position() call or drag) so we don't loop needlessly
@@ -245,12 +247,14 @@ ColaLayout.prototype.run = function(){
     let node = this;
     let scrCola = node.scratch().cola;
 
-    scrCola.fixed = node.locked();
+    scrCola.fixed = node.locked() || node.grabbed() || options.extraLocked(node);
 
     if( node.locked() ){
       adaptor.dragstart( scrCola );
     } else {
-      adaptor.dragend( scrCola );
+      if (!options.extraLocked(node)) {
+        adaptor.dragend( scrCola );
+      }
     }
   });
 
@@ -266,7 +270,7 @@ ColaLayout.prototype.run = function(){
       width: dimensions.w + 2*padding,
       height: dimensions.h + 2*padding,
       index: i,
-      fixed: node.locked()
+      fixed: node.locked() || node.grabbed() || options.extraLocked(node)
     };
 
     return struct;
@@ -370,7 +374,7 @@ ColaLayout.prototype.run = function(){
         return child[0].scratch().cola.index;
       }),
 
-      fixed: node.locked()
+      fixed: node.locked() || node.grabbed() || options.extraLocked(node)
     };
 
     return node;
@@ -463,7 +467,7 @@ ColaLayout.prototype.run = function(){
   adaptor
     .avoidOverlaps( options.avoidOverlap )
     .handleDisconnected( options.handleDisconnected )
-    .start( options.unconstrIter, options.userConstIter, options.allConstIter)
+    .start( options.unconstrIter, options.userConstIter, options.allConstIter, 0, true, options.centerGraph) // 4th and 5th parameters have default value
   ;
 
   if( !options.infinite ){
